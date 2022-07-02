@@ -1,8 +1,9 @@
 import './App.css';
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch, connect } from 'react-redux'
 import {fetchData, incrementId, decrementId, customId, clearData} from'./features/dataSlice'
+import {useEffect} from 'react'
 
-function App() {
+function App(props) {
   // your logic goes here!
   const dispatch = useDispatch()
   const data = useSelector((state)=> state.data)
@@ -13,14 +14,18 @@ function App() {
       return <p>image here</p>
     }
   }
+  useEffect(() => {
+    dispatch(fetchData())
+}, [props.objectId, dispatch])
+
 
   return (
     <div className="App">
       <div>
-        <button onClick={() => dispatch(fetchData())}>Trigger Thunk</button>
-        <button onClick={() => dispatch(clearData())}>Clear</button>
+        {/* <button onClick={() => dispatch(fetchData())}>Trigger Thunk</button> */}    
         <button onClick={() => dispatch(incrementId())}>Next</button>
         <button onClick={() => dispatch(decrementId())}>Back</button>
+        <button onClick={() => dispatch(clearData())}>Clear</button>
       </div>
       <input value={data.objectId} onChange={(e) => {dispatch(customId(Number(e.target.value))) }} />
       <div>
@@ -31,5 +36,9 @@ function App() {
     </div>
   );
 }
+const mapStateToProps = (state) => ({
+  objectId: state.data.objectId
+})
 
-export default App;
+export default connect(mapStateToProps)(App)
+
